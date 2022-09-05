@@ -26,4 +26,5 @@ interface ISPen {
   boolean isCharging();
   boolean setCharging(boolean charge);
   String getMACAddress();
+  void setMACAddress(String mac);
 }
