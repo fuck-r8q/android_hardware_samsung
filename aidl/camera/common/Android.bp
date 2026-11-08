@@ -21,6 +21,7 @@ cc_library_static {
         "SimpleThread.cpp",
     ],
     cflags: [
+        "-DCAMERA_MODULE_NO_DEVICE_VERSION",
         "-Werror",
         "-Wextra",
         "-Wall",
