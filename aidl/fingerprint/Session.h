@@ -7,6 +7,7 @@
 #pragma once
 
 #include <aidl/android/hardware/biometrics/fingerprint/BnSession.h>
+#include <aidl/android/hardware/biometrics/fingerprint/FingerprintSensorType.h>
 #include <aidl/android/hardware/biometrics/fingerprint/ISessionCallback.h>
 
 #include <hardware/fingerprint.h>
@@ -19,6 +20,7 @@
 using ::aidl::android::hardware::biometrics::common::DisplayState;
 using ::aidl::android::hardware::biometrics::common::ICancellationSignal;
 using ::aidl::android::hardware::biometrics::common::OperationContext;
+using ::aidl::android::hardware::biometrics::fingerprint::FingerprintSensorType;
 using ::aidl::android::hardware::biometrics::fingerprint::PointerContext;
 using ::aidl::android::hardware::keymaster::HardwareAuthToken;
 
@@ -33,7 +35,7 @@ void onClientDeath(void* cookie);
 class Session : public BnSession {
   public:
     Session(LegacyHAL hal, int userId, std::shared_ptr<ISessionCallback> cb,
-            LockoutTracker lockoutTracker);
+            LockoutTracker lockoutTracker, FingerprintSensorType sensorType);
     ndk::ScopedAStatus generateChallenge() override;
     ndk::ScopedAStatus revokeChallenge(int64_t challenge) override;
     ndk::ScopedAStatus enroll(const HardwareAuthToken& hat,
@@ -89,6 +91,8 @@ class Session : public BnSession {
 
     // The user ID for which this session was created.
     int32_t mUserId;
+
+    FingerprintSensorType mSensorType;
 
     // Callback for talking to the framework. This callback must only be called from non-binder
     // threads to prevent nested binder calls and consequently a binder thread exhaustion.

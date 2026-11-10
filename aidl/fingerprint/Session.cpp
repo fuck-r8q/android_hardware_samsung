@@ -35,8 +35,12 @@ void onClientDeath(void* cookie) {
 }
 
 Session::Session(LegacyHAL hal, int userId, std::shared_ptr<ISessionCallback> cb,
-                 LockoutTracker lockoutTracker)
-    : mHal(hal), mLockoutTracker(lockoutTracker), mUserId(userId), mCb(cb) {
+                 LockoutTracker lockoutTracker, FingerprintSensorType sensorType)
+    : mHal(hal),
+      mLockoutTracker(lockoutTracker),
+      mSensorType(sensorType),
+      mUserId(userId),
+      mCb(cb) {
     mDeathRecipient = AIBinder_DeathRecipient_new(onClientDeath);
 
     char filename[64];
@@ -203,7 +207,9 @@ ndk::ScopedAStatus Session::onPointerDown(int32_t /*pointerId*/, int32_t /*x*/, 
         mHal.request(SEM_REQUEST_TOUCH_EVENT, 2);
     }
     checkSensorLockout();
-    mCb->onAcquired(AcquiredInfo::START, 0);
+    if (mSensorType == FingerprintSensorType::UNDER_DISPLAY_ULTRASONIC) {
+        mCb->onAcquired(AcquiredInfo::START, 0);
+    }
 
     return ndk::ScopedAStatus::ok();
 }
